@@ -1,29 +1,20 @@
-# Markdown Demo Web Application
+# Markdown Tabs Viewer
 
-This static web application renders a predefined Markdown file (`input.md`) into HTML using the `marked` library. It highlights code blocks with `highlight.js` and displays the result within the page.
+## Overview
+
+Markdown Tabs Viewer is a simple, responsive web application built with Bootstrap 5 that allows users to write Markdown in a source tab and view the rendered HTML in a separate tab. Switching between tabs keeps the content synchronized, providing an interactive Markdown preview experience.
 
 ## Features
-- Responsive layout with Bootstrap 5
-- Markdown parsing with `marked`
-- Syntax highlighting with `highlight.js`
-- Error handling for rendering issues
+
+- Editable Markdown source
+- Real-time HTML rendering
+- Responsive layout for mobile and desktop
+- Graceful error handling
 
 ## Usage
-- Open `index.html` in a modern browser.
-- Click the "Load Markdown" button to render the Markdown content.
-- The content is loaded from the embedded `input.md` content within the script.
 
-## Notes
-- The application uses embedded JavaScript; no backend or server is required.
-- The markdown content is hardcoded but can be modified in the script.
-
-## Dependencies
-- Bootstrap 5
-- marked
-- highlight.js
+Open the `index.html` in your browser. Enter Markdown into the source tab; the rendered HTML will update automatically in the other tab.
 
 ## License
-This project is licensed under the MIT License.
 
-## License details
-See the `LICENSE` file.
+This project is licensed under the MIT License.
