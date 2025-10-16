@@ -3,80 +3,103 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Markdown Viewer</title>
+<title>Markdown Tabs Viewer</title>
 <!-- Bootstrap 5 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-<!-- Highlight.js CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css" />
 <style>
   body {
-    padding: 2rem;
+    padding: 20px;
+  }
+  #markdown-source {
+    width: 100%;
+    height: 200px;
   }
   #markdown-output {
-    margin-top: 2rem;
-}
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    min-height: 200px;
+  }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1 class="mb-4">Markdown to HTML Converter</h1>
-  <div class="mb-3">
-    <button id="load-md" class="btn btn-primary">Load Markdown</button>
+  <h1 class="mb-4">Markdown Tabs Viewer</h1>
+  <ul class="nav nav-tabs" id="markdown-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="source-tab" data-bs-toggle="tab" data-bs-target="#source" type="button" role="tab" aria-controls="source" aria-selected="true">Markdown Source</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="rendered-tab" data-bs-toggle="tab" data-bs-target="#rendered" type="button" role="tab" aria-controls="rendered" aria-selected="false">Rendered HTML</button>
+    </li>
+  </ul>
+  <div class="tab-content mt-3" id="markdown-tabs-content">
+    <div class="tab-pane fade show active" id="source" role="tabpanel" aria-labelledby="source-tab">
+      <textarea id="markdown-source" class="form-control" placeholder="Enter your Markdown here..."># Sample Markdown
+
+Type your markdown in the source tab. The rendered HTML will be shown in the other tab.
+
+- Item 1
+- Item 2
+
+**Bold Text** and *Italic Text*</textarea>
+    </div>
+    <div class="tab-pane fade" id="rendered" role="tabpanel" aria-labelledby="rendered-tab">
+      <div id="markdown-output" class="border rounded"></div>
+    </div>
   </div>
-  <div id="markdown-output" class="border rounded p-3"></div>
 </div>
-<!-- Bootstrap 5 JS Bundle -->
+<!-- Bootstrap 5 JS Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Marked library for markdown parsing -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<!-- Highlight.js library for code highlighting -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>
-// Initialize highlight.js
-hljs.highlightAll();
-
-// Markdown content (from input.md)
-const markdownContent = `# Markdown Demo
-
-This is a **demo markdown** file.
-
-# Heading Level 1
-
-Some text under a heading.
-
-## Heading Level 2
-
-- List item 1
-- List item 2
-- List item 3
-
-\
-const code = "hello world";\
-
-> This is a blockquote.
-
-End of demo content.`;
-
-// Function to render markdown
-function renderMarkdown() {
-  try {
-    const html = marked.parse(markdownContent, { highlight: function(code, lang) {
-      return hljs.highlightAuto(code).value;
-    } });
-    const outputDiv = document.getElementById('markdown-output');
-    outputDiv.innerHTML = html;
-    hljs.highlightAll(); // re-highlight after rendering
-  } catch (error) {
-    console.error('Error rendering markdown:', error);
-    document.getElementById('markdown-output').innerHTML = '<div class="alert alert-danger">Error rendering markdown.</div>';
+  // Function to convert Markdown to HTML
+  function convertMarkdown(markdown) {
+    try {
+      // Basic Markdown to HTML conversion
+      // For simplicity, handle headers, bold, italics, lists
+      let html = markdown
+        // Convert headers
+        .replace(/^# (.*)$/gm, '<h1>$1</h1>')
+        .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+        .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+        // Convert bold
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        // Convert italics
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        // Convert unordered lists
+        .replace(/(^\s*- .+$)/gm, match => {
+          // Wrap list items in <li>
+          return match.replace(/^\s*- (.+)$/m, '<li>$1</li>');
+        })
+        // Wrap list items with <ul> tags
+        .replace(/((?:^\s*- .+$\n?)+)/gm, function(match) {
+          const items = match.trim().split('\n');
+          return '<ul>' + items.join('') + '</ul>';
+        });
+      return html;
+    } catch (e) {
+      console.error('Error converting markdown:', e);
+      return '<p class="text-danger">Error rendering markdown</p>';
+    }
   }
-}
 
-// Event listener for load button
-document.getElementById('load-md').addEventListener('click', renderMarkdown);
+  document.addEventListener('DOMContentLoaded', () => {
+    const sourceTextarea = document.getElementById('markdown-source');
+    const outputDiv = document.getElementById('markdown-output');
 
-// Optional: auto-render on page load
-window.addEventListener('DOMContentLoaded', renderMarkdown);
+    function updateRender() {
+      const markdownText = sourceTextarea.value;
+      const html = convertMarkdown(markdownText);
+      outputDiv.innerHTML = html;
+    }
+
+    // Initial render
+    updateRender();
+
+    // Update on input
+    sourceTextarea.addEventListener('input', () => {
+      updateRender();
+    });
+  });
 </script>
 </body>
 </html>
